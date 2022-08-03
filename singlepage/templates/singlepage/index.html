@@ -1,0 +1,134 @@
+{# api/templates/index.html #}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Text Summerizer</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+</head>
+<body style="background-color:white">
+<header class="w3-display-container w3-content w3-center" style="max-width:1500px">
+  <img class="w3-image" src="{% static 'images/HELLO2.jpeg' %}" alt="Me" width="400" height="400">
+  <!-- <div class="w3-display-middle w3-padding-large w3-border w3-wide w3-text-light-grey w3-center">
+    <h1 class="w3-hide-medium w3-hide-small w3-xxxlarge" style="color:black;"><b>Final Year Project</b></h1>
+    <h3 class="w3-hide-medium w3-hide-small" style="color:black;"><b>Summarizer</b></h3>
+  </div> -->
+  
+  <div class="w3-bar w3-light-grey w3-round w3-display-bottommiddle w3-hide-small" style="bottom:-16px">
+    <a  class="w3-bar-item w3-button">Alishan 1880103</a>
+    <a  class="w3-bar-item w3-button">Hunain 1880105</a>
+  </div>
+</header>
+
+<div class="w3-center w3-light-grey w3-padding-16 w3-hide-large w3-hide-medium">
+</div>
+<div class="w3-content w3-padding-large w3-margin-top" id="portfolio">
+    
+    <form id="avatar_form">
+        <div class="w3-light-grey w3-padding-large w3-padding-32 w3-margin-top" id="contact">
+        <label>500 Words are Required at least, excluding duplicate sentences.</label>
+        <textarea id="id_avatar" name="id_avatar" placeholder="Paste your text here" oninput="countWord()" rows="7" cols="97"></textarea>
+        <p style="text-align:right;"> Word Count:
+            <span id="show">0</span>
+        </p>
+        <div id="myData"></div>
+        <input type="hidden" id="myVar" name="variable" value="{{ request.get_host }}">
+        <button type="submit" class="w3-button w3-block w3-dark-grey" onclick="clearBox('myData')">Summarize</button>
+        </div>
+    </form>
+</body>
+</html>
+
+<!-- {# api/templates/index.html #}
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <title>Auto-Summary</title>
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <h1 class="my-3">Upload the file</h1>
+            <form id="avatar_form">
+                <div class="form-group">
+                    <label for="id_avatar">Choose a text file with "*.txt" extension.</label>
+                    <textarea id="id_avatar" name="id_avatar" rows="4" cols="97"></textarea>
+                    <input type="file" class="form-control-file" id="id_avatar"/>
+                </div>
+                <button type="submit" class="btn btn-primary" onclick="clearBox('myData')">Submit</button>
+            </form>
+            <h1 class="my-3">Prediction Received</h1>
+            <div id="myData"></div>
+            <input type="hidden" id="myVar" name="variable" value="{{ request.get_host }}">
+
+        </div>
+    </div>
+</div> -->
+
+<script>
+    function clearBox(elementID)
+    {
+        document.getElementById(elementID).innerHTML = "";
+    }
+    document.getElementById('avatar_form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        var originalHtml = document;
+        var uri = document.getElementById('myVar').value
+        var input = document.getElementById('id_avatar');
+
+        var data = new FormData();
+        data.append('summary', input.value);
+        
+        fetch('http://'+uri+'/summarize/', {
+            method: 'POST',
+            body: data
+        }).then(response => {
+            return response.json();
+        }).then(data => {
+            appendData(data);
+            console.log(uri);
+            console.log(data);
+            // console.log();
+        }).catch((error) => {
+            console.error('Error:', error);
+        });
+        function appendData(data) {
+            var returnedData = data;
+            var mainContainer = document.getElementById("myData");
+            var div = document.createElement("div");
+            if (data){
+                div.innerHTML = 'Summary:'+'<br>' + data.summary;
+                mainContainer.appendChild(div);
+            }
+        }
+    });
+
+    function countWord() {
+        var words = document.getElementById("id_avatar").value;
+        var count = 0;
+        var split = words.split(' ');
+        for (var i = 0; i < split.length; i++) {
+            if (split[i] != "") {
+                count += 1;
+            }
+        }
+        document.getElementById("show").innerHTML = count;
+    }
+</script>
+</body>
+</html>
